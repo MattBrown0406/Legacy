@@ -116,9 +116,9 @@ eas env:create --environment production --name EXPO_PUBLIC_GOOGLE_CLIENT_ID --va
 ```
 
 ### 4b. App icon
-Done — a branded 1024×1024 icon (navy + gold lighthouse) is at `assets/icon.png`
-and wired in `app.json` (also used as the splash logo). Replace that file if you
-want a different mark.
+Done — the Freedom Interventions bridge mark is at `assets/icon.png` (1024×1024,
+opaque, cream background) and wired in `app.json` (also the splash logo). Replace
+that file to change it.
 
 ### 4c. Build & submit
 ```bash
