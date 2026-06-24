@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Switch, View } from 'react-native';
 import {
   deleteCase,
   getCase,
@@ -10,6 +10,7 @@ import {
   updateCaseStage,
 } from '@/data/cases';
 import { INVITE_LINKS, INVITE_TARGETS, lastInvitedByTarget, logInvite } from '@/data/invites';
+import { formatMoney, parseDollarsToCents } from '@/lib/money';
 import { shareContent } from '@/lib/share';
 import { AppHeader } from '@/components/AppHeader';
 import { ScreenContainer } from '@/components/ScreenContainer';
@@ -35,6 +36,7 @@ export default function CaseDetailScreen() {
   const [familyName, setFamilyName] = useState('');
   const [lovedOne, setLovedOne] = useState('');
   const [substance, setSubstance] = useState('');
+  const [fee, setFee] = useState('');
   const [saving, setSaving] = useState(false);
   const [lastInvited, setLastInvited] = useState<Partial<Record<InviteTarget, string>>>({});
 
@@ -47,6 +49,7 @@ export default function CaseDetailScreen() {
         setFamilyName(row.family_name);
         setLovedOne(row.loved_one ?? '');
         setSubstance(row.substance ?? '');
+        setFee(row.fee_cents ? String(row.fee_cents / 100) : '');
         setLastInvited(await lastInvitedByTarget(id));
       }
     } catch (e) {
@@ -127,6 +130,7 @@ export default function CaseDetailScreen() {
         family_name: familyName.trim(),
         loved_one: lovedOne.trim() || null,
         substance: substance.trim() || null,
+        fee_cents: parseDollarsToCents(fee) ?? 0,
       });
       await load();
       setEditing(false);
@@ -134,6 +138,18 @@ export default function CaseDetailScreen() {
       Alert.alert('Could not save', e?.message ?? 'Unknown error');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function togglePaid() {
+    if (!c) return;
+    const next = !c.paid;
+    setC({ ...c, paid: next });
+    try {
+      await updateCaseFields(c.id, { paid: next });
+    } catch (e: any) {
+      Alert.alert('Could not update', e?.message ?? 'Unknown error');
+      load();
     }
   }
 
@@ -202,6 +218,13 @@ export default function CaseDetailScreen() {
               <Field label="Family name" value={familyName} onChangeText={setFamilyName} />
               <Field label="Loved one" value={lovedOne} onChangeText={setLovedOne} />
               <Field label="Substance / focus" value={substance} onChangeText={setSubstance} />
+              <Field
+                label="Fee (USD)"
+                value={fee}
+                onChangeText={setFee}
+                placeholder="2500"
+                keyboardType="decimal-pad"
+              />
               <Button title="Save changes" onPress={saveEdits} loading={saving} />
             </>
           ) : (
@@ -222,6 +245,19 @@ export default function CaseDetailScreen() {
               ) : null}
             </>
           )}
+        </Card>
+
+        <Card style={styles.card}>
+          <View style={styles.linkRow}>
+            <View>
+              <H2>Fee</H2>
+              <Body style={styles.feeAmount}>{formatMoney(c.fee_cents)}</Body>
+            </View>
+            <View style={styles.paidToggle}>
+              <Badge label={c.paid ? 'Paid' : 'Unpaid'} tone={c.paid ? 'success' : 'gold'} />
+              <Switch value={c.paid} onValueChange={togglePaid} trackColor={{ true: palette.gold }} />
+            </View>
+          </View>
         </Card>
 
         {c.pipeline === 'intervention' ? (
@@ -330,6 +366,8 @@ const styles = StyleSheet.create({
   loader: { marginTop: spacing.xxl },
   card: { marginBottom: spacing.lg },
   familyName: { marginTop: spacing.sm },
+  feeAmount: { fontSize: 20, fontWeight: '700', color: palette.navy, marginTop: spacing.xs },
+  paidToggle: { alignItems: 'flex-end', gap: spacing.sm },
   metaRow: { marginTop: spacing.md },
   note: { marginTop: spacing.xs },
   linkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

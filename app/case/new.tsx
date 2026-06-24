@@ -1,11 +1,12 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, Switch, View } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import { createCase } from '@/data/cases';
+import { parseDollarsToCents } from '@/lib/money';
 import { AppHeader } from '@/components/AppHeader';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { Button, Field, Label, SegmentedControl } from '@/components/ui';
+import { Body, Button, Field, Label, Muted, SegmentedControl } from '@/components/ui';
 import { Pipeline } from '@/types';
 import { palette, spacing } from '@/theme';
 
@@ -16,6 +17,8 @@ export default function NewCaseScreen() {
   const [lovedOne, setLovedOne] = useState('');
   const [substance, setSubstance] = useState('');
   const [pipeline, setPipeline] = useState<Pipeline>('intervention');
+  const [fee, setFee] = useState('');
+  const [paid, setPaid] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function save() {
@@ -31,6 +34,8 @@ export default function NewCaseScreen() {
         loved_one: lovedOne.trim() || null,
         substance: substance.trim() || null,
         pipeline,
+        fee_cents: parseDollarsToCents(fee) ?? 0,
+        paid,
       });
       router.replace(`/case/${created.id}`);
     } catch (e: any) {
@@ -78,7 +83,22 @@ export default function NewCaseScreen() {
           autoCapitalize="sentences"
         />
 
-        <Button title="Create case" onPress={save} loading={busy} />
+        <Field
+          label="Fee (USD)"
+          value={fee}
+          onChangeText={setFee}
+          placeholder="2500"
+          keyboardType="decimal-pad"
+        />
+        <View style={styles.paidRow}>
+          <View style={styles.paidText}>
+            <Body style={styles.paidTitle}>Paid</Body>
+            <Muted>Mark on if the family has paid this fee.</Muted>
+          </View>
+          <Switch value={paid} onValueChange={setPaid} trackColor={{ true: palette.gold }} />
+        </View>
+
+        <Button title="Create case" onPress={save} loading={busy} style={styles.submit} />
       </ScreenContainer>
     </View>
   );
@@ -87,4 +107,14 @@ export default function NewCaseScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: palette.ivory },
   field: { marginBottom: spacing.lg },
+  paidRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  paidText: { flex: 1 },
+  paidTitle: { fontWeight: '600' },
+  submit: { marginTop: spacing.sm },
 });

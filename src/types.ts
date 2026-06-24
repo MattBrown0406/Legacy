@@ -49,6 +49,8 @@ export interface Case {
   substance: string | null;
   pipeline: Pipeline;
   stage: Stage;
+  fee_cents: number;
+  paid: boolean;
   created_at: string;
 }
 
@@ -129,14 +131,3 @@ export interface CaseFile {
   created_at: string;
 }
 
-export type InvoiceStatus = 'unpaid' | 'paid';
-
-export interface Invoice {
-  id: string;
-  practitioner_id: string;
-  case_id: string | null;
-  item: string;
-  amount_cents: number;
-  status: InvoiceStatus;
-  created_at: string;
-}

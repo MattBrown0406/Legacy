@@ -22,6 +22,8 @@ export interface NewCaseInput {
   loved_one?: string | null;
   substance?: string | null;
   pipeline: Pipeline;
+  fee_cents?: number;
+  paid?: boolean;
 }
 
 export async function createCase(
@@ -37,6 +39,8 @@ export async function createCase(
       substance: input.substance ?? null,
       pipeline: input.pipeline,
       stage: 'inquiry',
+      fee_cents: input.fee_cents ?? 0,
+      paid: input.paid ?? false,
     })
     .select('*')
     .single();
@@ -51,7 +55,7 @@ export async function updateCaseStage(id: string, stage: Stage): Promise<void> {
 
 export async function updateCaseFields(
   id: string,
-  fields: Partial<Pick<Case, 'family_name' | 'loved_one' | 'substance'>>,
+  fields: Partial<Pick<Case, 'family_name' | 'loved_one' | 'substance' | 'fee_cents' | 'paid'>>,
 ): Promise<void> {
   const { error } = await supabase.from('cases').update(fields).eq('id', id);
   if (error) throw error;

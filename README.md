@@ -11,7 +11,8 @@ tool by Freedom Interventions. Universal Expo app (iOS + web).
 - **Schedule** — appointments (source of truth) with local push reminders and
   one-way push to Google Calendar.
 - **Invites** — send & log the Sober Helpline and FamilyBridge links per case.
-- **Billing** — manual invoices, mark paid.
+- **Revenue** — per-case fee + paid status entered on the case; rolled up into
+  monthly and annual totals.
 - **Settings** — profile, Google Calendar connection, invite code.
 
 ## Stack
