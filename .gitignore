@@ -28,3 +28,6 @@ yarn-error.*
 .env
 .env.local
 .env.*.local
+
+# supabase CLI scratch
+supabase/.temp/
