@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -274,6 +275,34 @@ export default function ReadinessScreen() {
     ]);
   }
 
+  const groupPhones = participants.map((p) => p.phone).filter((x): x is string => !!x);
+  const groupEmails = participants.map((p) => p.email).filter((x): x is string => !!x);
+
+  function textAll() {
+    if (groupPhones.length === 0) {
+      Alert.alert('No phone numbers', 'Add phone numbers to participants first.');
+      return;
+    }
+    if (Platform.OS === 'web') {
+      Alert.alert('Use the iOS app', 'Group texting opens your Messages app on iPhone.');
+      return;
+    }
+    const sep = Platform.OS === 'ios' ? ',' : ';';
+    Linking.openURL(`sms:${groupPhones.join(sep)}`).catch(() =>
+      Alert.alert('Could not open Messages'),
+    );
+  }
+
+  function emailAll() {
+    if (groupEmails.length === 0) {
+      Alert.alert('No email addresses', 'Add email addresses to participants first.');
+      return;
+    }
+    Linking.openURL(`mailto:${groupEmails.join(',')}`).catch(() =>
+      Alert.alert('Could not open Mail'),
+    );
+  }
+
   const doneCount = READINESS_WORKFLOW.filter((w) => steps[w.key] === 'done').length;
 
   if (loading) {
@@ -323,6 +352,18 @@ export default function ReadinessScreen() {
               <Ionicons name={showAddPart ? 'close' : 'add'} size={24} color={palette.navy} />
             </Pressable>
           </View>
+          {participants.length > 0 ? (
+            <View style={styles.groupActions}>
+              <Pressable style={styles.groupBtn} onPress={textAll}>
+                <Ionicons name="chatbubble-outline" size={16} color={palette.navy} />
+                <Body style={styles.groupBtnText}>Text all</Body>
+              </Pressable>
+              <Pressable style={styles.groupBtn} onPress={emailAll}>
+                <Ionicons name="mail-outline" size={16} color={palette.navy} />
+                <Body style={styles.groupBtnText}>Email all</Body>
+              </Pressable>
+            </View>
+          ) : null}
           {participants.length === 0 ? (
             <Muted style={styles.hint}>No participants yet.</Muted>
           ) : (
@@ -534,6 +575,20 @@ const styles = StyleSheet.create({
   stepText: { flex: 1 },
   stepTitle: { fontWeight: '600' },
   stepTitleDone: { color: palette.textMuted },
+  groupActions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
+  groupBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
+    borderWidth: 1,
+    borderColor: palette.line,
+    borderRadius: radius.sm,
+    backgroundColor: palette.white,
+  },
+  groupBtnText: { fontSize: 14, fontWeight: '600', color: palette.navy },
   participantList: { marginTop: spacing.md, gap: spacing.md },
   participant: {
     borderWidth: 1,
