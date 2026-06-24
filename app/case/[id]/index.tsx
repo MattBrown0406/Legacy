@@ -215,6 +215,19 @@ export default function CaseDetailScreen() {
           </Card>
         ) : null}
 
+        <Card
+          style={styles.card}
+          onPress={() => router.push({ pathname: '/appointment/new', params: { caseId: c.id } })}
+        >
+          <View style={styles.linkRow}>
+            <View>
+              <H2>Schedule appointment</H2>
+              <Muted style={styles.note}>Add a session, call, or the intervention</Muted>
+            </View>
+            <Ionicons name="add-circle-outline" size={24} color={palette.navy} />
+          </View>
+        </Card>
+
         <Card style={styles.card}>
           <H2>Stage</H2>
           <View style={styles.stageList}>
