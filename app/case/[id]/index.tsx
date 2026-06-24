@@ -9,6 +9,8 @@ import {
   updateCaseFields,
   updateCaseStage,
 } from '@/data/cases';
+import { INVITE_LINKS, INVITE_TARGETS, lastInvitedByTarget, logInvite } from '@/data/invites';
+import { shareContent } from '@/lib/share';
 import { AppHeader } from '@/components/AppHeader';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import {
@@ -21,7 +23,7 @@ import {
   Label,
   Muted,
 } from '@/components/ui';
-import { Case, Pipeline, STAGE_LABELS, Stage, stagesForPipeline } from '@/types';
+import { Case, InviteTarget, Pipeline, STAGE_LABELS, Stage, stagesForPipeline } from '@/types';
 import { palette, radius, spacing } from '@/theme';
 
 export default function CaseDetailScreen() {
@@ -34,6 +36,7 @@ export default function CaseDetailScreen() {
   const [lovedOne, setLovedOne] = useState('');
   const [substance, setSubstance] = useState('');
   const [saving, setSaving] = useState(false);
+  const [lastInvited, setLastInvited] = useState<Partial<Record<InviteTarget, string>>>({});
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -44,6 +47,7 @@ export default function CaseDetailScreen() {
         setFamilyName(row.family_name);
         setLovedOne(row.loved_one ?? '');
         setSubstance(row.substance ?? '');
+        setLastInvited(await lastInvitedByTarget(id));
       }
     } catch (e) {
       console.warn('[Legacy] getCase failed', e);
@@ -51,6 +55,26 @@ export default function CaseDetailScreen() {
       setLoading(false);
     }
   }, [id]);
+
+  async function sendInvite(target: InviteTarget) {
+    if (!c) return;
+    const link = INVITE_LINKS[target];
+    const result = await shareContent({
+      title: link.label,
+      message: `${link.label} — ${link.description}`,
+      url: link.url,
+    });
+    if (result === 'dismissed') return;
+    try {
+      const inv = await logInvite(c.id, target);
+      setLastInvited((m) => ({ ...m, [target]: inv.sent_at }));
+      if (result === 'copied') {
+        Alert.alert('Link copied', `${link.label} link copied and logged.`);
+      }
+    } catch (e: any) {
+      Alert.alert('Could not log invite', e?.message ?? 'Unknown error');
+    }
+  }
 
   useEffect(() => {
     load();
@@ -229,6 +253,37 @@ export default function CaseDetailScreen() {
         </Card>
 
         <Card style={styles.card}>
+          <H2>Invites</H2>
+          <Muted style={styles.note}>Send a resource to the family and log it.</Muted>
+          <View style={styles.inviteList}>
+            {INVITE_TARGETS.map((target) => {
+              const link = INVITE_LINKS[target];
+              const sent = lastInvited[target];
+              return (
+                <View key={target} style={styles.inviteRow}>
+                  <View style={styles.inviteInfo}>
+                    <Body style={styles.inviteLabel}>{link.label}</Body>
+                    <Muted>{link.description}</Muted>
+                    {sent ? (
+                      <Badge
+                        label={`Last sent ${new Date(sent).toLocaleDateString()}`}
+                        tone="success"
+                      />
+                    ) : null}
+                  </View>
+                  <Button
+                    title="Send"
+                    variant="secondary"
+                    onPress={() => sendInvite(target)}
+                    style={styles.inviteBtn}
+                  />
+                </View>
+              );
+            })}
+          </View>
+        </Card>
+
+        <Card style={styles.card}>
           <H2>Stage</H2>
           <View style={styles.stageList}>
             {stagesForPipeline(c.pipeline).map((stage) => {
@@ -291,4 +346,9 @@ const styles = StyleSheet.create({
   stageLabel: { color: palette.text },
   stageLabelActive: { fontWeight: '700', color: palette.navy },
   moveBtn: { marginTop: spacing.md },
+  inviteList: { marginTop: spacing.md, gap: spacing.lg },
+  inviteRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  inviteInfo: { flex: 1, gap: spacing.xs },
+  inviteLabel: { fontWeight: '600', fontSize: 16 },
+  inviteBtn: { paddingHorizontal: spacing.lg },
 });

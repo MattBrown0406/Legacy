@@ -31,6 +31,22 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="docs"
+        options={{
+          title: 'Docs',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document-text" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="billing"
+        options={{
+          title: 'Billing',
+          tabBarIcon: ({ color, size }) => <Ionicons name="card" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
