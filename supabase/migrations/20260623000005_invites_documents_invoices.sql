@@ -1,4 +1,4 @@
--- Legacy — Phase 5 schema: invites, documents, invoices. Owner-only RLS.
+-- Legacy — Phase 5 schema: invites, invoices. Owner-only RLS.
 
 -- Helper: does the signed-in user own this practitioner row?
 create or replace function public.owns_practitioner(pid uuid)
@@ -29,26 +29,6 @@ create policy "invites_all_own"
   on public.invites for all
   using (public.owns_case(case_id))
   with check (public.owns_case(case_id));
-
--- ---------- documents ----------
-create table if not exists public.documents (
-  id uuid primary key default gen_random_uuid(),
-  practitioner_id uuid not null references public.practitioners (id) on delete cascade,
-  title text not null,
-  kind text not null default 'other'
-    check (kind in ('letter_guidelines', 'boundaries', 'services_agreement', 'other')),
-  body_md text not null default '',
-  created_at timestamptz not null default now()
-);
-create index if not exists documents_practitioner_idx on public.documents (practitioner_id);
-
-alter table public.documents enable row level security;
-
-drop policy if exists "documents_all_own" on public.documents;
-create policy "documents_all_own"
-  on public.documents for all
-  using (public.owns_practitioner(practitioner_id))
-  with check (public.owns_practitioner(practitioner_id));
 
 -- ---------- invoices ----------
 create table if not exists public.invoices (

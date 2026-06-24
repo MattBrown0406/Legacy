@@ -6,11 +6,11 @@ tool by Freedom Interventions. Universal Expo app (iOS + web).
 ## Sections
 - **Cases** — two pipelines (Intervention, Coaching); create, move between
   pipelines, case detail.
-- **Family Readiness** — 7-step workflow checklist, participant tracker, notes.
+- **Family Readiness** — 7-step workflow checklist, participant tracker with
+  contacts + group text/email, case file uploads, and notes.
 - **Schedule** — appointments (source of truth) with local push reminders and
   one-way push to Google Calendar.
 - **Invites** — send & log the Sober Helpline and FamilyBridge links per case.
-- **Documents** — shareable templates (letter guidelines, boundaries, agreement).
 - **Billing** — manual invoices, mark paid.
 - **Settings** — profile, Google Calendar connection, invite code.
 

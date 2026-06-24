@@ -129,16 +129,6 @@ export interface CaseFile {
   created_at: string;
 }
 
-export type DocumentKind = 'letter_guidelines' | 'boundaries' | 'services_agreement' | 'other';
-
-export interface DocumentTemplate {
-  id: string;
-  practitioner_id: string;
-  title: string;
-  kind: DocumentKind;
-  body_md: string;
-}
-
 export type InvoiceStatus = 'unpaid' | 'paid';
 
 export interface Invoice {
