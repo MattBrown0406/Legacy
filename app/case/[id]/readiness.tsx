@@ -29,7 +29,7 @@ import {
 } from '@/lib/files';
 import { AppHeader } from '@/components/AppHeader';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { Badge, Body, Button, Card, Field, H2, Label, Muted } from '@/components/ui';
+import { Badge, Body, Button, Card, Field, H2, Muted } from '@/components/ui';
 import {
   CaseFile,
   CaseNote,
@@ -81,6 +81,10 @@ export default function ReadinessScreen() {
   const [noteBody, setNoteBody] = useState('');
   const [savingNote, setSavingNote] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  // collapsible add forms (hidden until the + in the card header is tapped)
+  const [showAddPart, setShowAddPart] = useState(false);
+  const [showAddNote, setShowAddNote] = useState(false);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -313,7 +317,12 @@ export default function ReadinessScreen() {
 
         {/* Participants */}
         <Card style={styles.card}>
-          <H2>Participants</H2>
+          <View style={styles.cardHead}>
+            <H2>Participants</H2>
+            <Pressable onPress={() => setShowAddPart((v) => !v)} hitSlop={8}>
+              <Ionicons name={showAddPart ? 'close' : 'add'} size={24} color={palette.navy} />
+            </Pressable>
+          </View>
           {participants.length === 0 ? (
             <Muted style={styles.hint}>No participants yet.</Muted>
           ) : (
@@ -414,25 +423,26 @@ export default function ReadinessScreen() {
             </View>
           )}
 
-          <View style={styles.addForm}>
-            <Label>Add participant</Label>
-            <Field value={newName} onChangeText={setNewName} placeholder="Name" autoCapitalize="words" />
-            <Field value={newRole} onChangeText={setNewRole} placeholder="Role (e.g. Mother, Brother)" autoCapitalize="words" />
-            <Field
-              value={newPhone}
-              onChangeText={setNewPhone}
-              placeholder="Phone"
-              keyboardType="phone-pad"
-            />
-            <Field
-              value={newEmail}
-              onChangeText={setNewEmail}
-              placeholder="Email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <Button title="Add participant" variant="secondary" onPress={onAddParticipant} />
-          </View>
+          {showAddPart ? (
+            <View style={styles.addForm}>
+              <Field value={newName} onChangeText={setNewName} placeholder="Name" autoCapitalize="words" />
+              <Field value={newRole} onChangeText={setNewRole} placeholder="Role (e.g. Mother, Brother)" autoCapitalize="words" />
+              <Field
+                value={newPhone}
+                onChangeText={setNewPhone}
+                placeholder="Phone"
+                keyboardType="phone-pad"
+              />
+              <Field
+                value={newEmail}
+                onChangeText={setNewEmail}
+                placeholder="Email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <Button title="Add participant" variant="secondary" onPress={onAddParticipant} />
+            </View>
+          ) : null}
         </Card>
 
         {/* Case files */}
@@ -471,18 +481,25 @@ export default function ReadinessScreen() {
 
         {/* Notes */}
         <Card style={styles.card}>
-          <H2>Case notes</H2>
-          <View style={styles.addForm}>
-            <Field
-              value={noteBody}
-              onChangeText={setNoteBody}
-              placeholder="Add a note…"
-              multiline
-              numberOfLines={3}
-              style={styles.noteInput}
-            />
-            <Button title="Add note" onPress={onAddNote} loading={savingNote} />
+          <View style={styles.cardHead}>
+            <H2>Case notes</H2>
+            <Pressable onPress={() => setShowAddNote((v) => !v)} hitSlop={8}>
+              <Ionicons name={showAddNote ? 'close' : 'add'} size={24} color={palette.navy} />
+            </Pressable>
           </View>
+          {showAddNote ? (
+            <View style={styles.addForm}>
+              <Field
+                value={noteBody}
+                onChangeText={setNoteBody}
+                placeholder="Add a note…"
+                multiline
+                numberOfLines={3}
+                style={styles.noteInput}
+              />
+              <Button title="Add note" onPress={onAddNote} loading={savingNote} />
+            </View>
+          ) : null}
           {notes.length === 0 ? (
             <Muted style={styles.hint}>No notes yet.</Muted>
           ) : (
