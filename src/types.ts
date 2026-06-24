@@ -78,6 +78,20 @@ export interface ReadinessStep {
   status: ReadinessStatus;
 }
 
+/**
+ * The 7-step Family Readiness workflow for an intervention case. step_key is
+ * stored in the DB; keep these keys stable.
+ */
+export const READINESS_WORKFLOW: { key: string; title: string; detail: string }[] = [
+  { key: 'consult', title: 'Initial consultation', detail: 'Meet the family, hear the story, set expectations.' },
+  { key: 'assessment', title: 'Assessment & history', detail: 'Gather substance history, risks, and prior attempts.' },
+  { key: 'team', title: 'Assemble the team', detail: 'Identify and confirm who will participate.' },
+  { key: 'education', title: 'Family education & roles', detail: 'Teach the model; assign each member their role.' },
+  { key: 'letters', title: 'Letters written & reviewed', detail: 'Each participant drafts and refines their letter.' },
+  { key: 'logistics', title: 'Logistics & rehearsal', detail: 'Set time, place, seating, and sequence; rehearse.' },
+  { key: 'boundaries', title: 'Bottom lines & treatment ready', detail: 'Confirm boundaries and the treatment/bed plan.' },
+];
+
 export type AppointmentKind = 'session' | 'call' | 'intervention' | 'other';
 
 export interface Appointment {
