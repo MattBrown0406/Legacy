@@ -37,6 +37,7 @@ export interface Practitioner {
   credential: string | null;
   practice_name: string | null;
   gcal_detail_mode: boolean; // true = full detail, false = "Busy"
+  gcal_email: string | null; // connected Google account email, null if not connected
   created_at: string;
 }
 

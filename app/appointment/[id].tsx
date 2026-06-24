@@ -11,6 +11,7 @@ import {
 } from '@/data/appointments';
 import { listCases } from '@/data/cases';
 import { cancelReminder, scheduleReminder } from '@/lib/reminders';
+import { removeAppointmentFromGcal, syncAppointmentToGcal } from '@/lib/gcal';
 import { AppHeader } from '@/components/AppHeader';
 import { AppointmentForm } from '@/components/AppointmentForm';
 import { ScreenContainer } from '@/components/ScreenContainer';
@@ -41,6 +42,7 @@ export default function EditAppointmentScreen() {
     if (!id) return;
     const updated = await updateAppointment(id, input);
     await scheduleReminder(updated);
+    if (profile?.gcal_email) await syncAppointmentToGcal(updated.id);
     router.back();
   }
 
@@ -54,6 +56,7 @@ export default function EditAppointmentScreen() {
         onPress: async () => {
           try {
             await cancelReminder(appt.id);
+            if (profile?.gcal_email) await removeAppointmentFromGcal(appt.gcal_event_id);
             await deleteAppointment(appt.id);
             router.back();
           } catch (e: any) {

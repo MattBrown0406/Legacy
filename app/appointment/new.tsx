@@ -5,6 +5,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { AppointmentInput, createAppointment } from '@/data/appointments';
 import { listCases } from '@/data/cases';
 import { scheduleReminder } from '@/lib/reminders';
+import { syncAppointmentToGcal } from '@/lib/gcal';
 import { AppHeader } from '@/components/AppHeader';
 import { AppointmentForm } from '@/components/AppointmentForm';
 import { ScreenContainer } from '@/components/ScreenContainer';
@@ -31,6 +32,7 @@ export default function NewAppointmentScreen() {
     if (!profile) return;
     const created = await createAppointment(profile.id, input);
     await scheduleReminder(created);
+    if (profile.gcal_email) await syncAppointmentToGcal(created.id);
     router.back();
   }
 
