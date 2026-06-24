@@ -43,11 +43,17 @@ export async function listParticipants(caseId: string): Promise<Participant[]> {
 
 export async function addParticipant(
   caseId: string,
-  input: { name: string; role?: string | null },
+  input: { name: string; role?: string | null; phone?: string | null; email?: string | null },
 ): Promise<Participant> {
   const { data, error } = await supabase
     .from('participants')
-    .insert({ case_id: caseId, name: input.name, role: input.role ?? null })
+    .insert({
+      case_id: caseId,
+      name: input.name,
+      role: input.role ?? null,
+      phone: input.phone ?? null,
+      email: input.email ?? null,
+    })
     .select('*')
     .single();
   if (error) throw error;
@@ -56,7 +62,7 @@ export async function addParticipant(
 
 export async function updateParticipant(
   id: string,
-  fields: Partial<Pick<Participant, 'name' | 'role' | 'status' | 'letter_in'>>,
+  fields: Partial<Pick<Participant, 'name' | 'role' | 'phone' | 'email' | 'status' | 'letter_in'>>,
 ): Promise<void> {
   const { error } = await supabase.from('participants').update(fields).eq('id', id);
   if (error) throw error;

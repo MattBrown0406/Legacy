@@ -66,6 +66,8 @@ export interface Participant {
   case_id: string;
   name: string;
   role: string | null;
+  phone: string | null;
+  email: string | null;
   status: ParticipantStatus;
   letter_in: boolean;
 }
@@ -84,13 +86,13 @@ export interface ReadinessStep {
  * stored in the DB; keep these keys stable.
  */
 export const READINESS_WORKFLOW: { key: string; title: string; detail: string }[] = [
-  { key: 'consult', title: 'Initial consultation', detail: 'Meet the family, hear the story, set expectations.' },
-  { key: 'assessment', title: 'Assessment & history', detail: 'Gather substance history, risks, and prior attempts.' },
-  { key: 'team', title: 'Assemble the team', detail: 'Identify and confirm who will participate.' },
-  { key: 'education', title: 'Family education & roles', detail: 'Teach the model; assign each member their role.' },
-  { key: 'letters', title: 'Letters written & reviewed', detail: 'Each participant drafts and refines their letter.' },
-  { key: 'logistics', title: 'Logistics & rehearsal', detail: 'Set time, place, seating, and sequence; rehearse.' },
-  { key: 'boundaries', title: 'Bottom lines & treatment ready', detail: 'Confirm boundaries and the treatment/bed plan.' },
+  { key: 'contract_sent', title: 'Contract Sent', detail: 'Engagement contract sent to the family.' },
+  { key: 'contract_signed_paid', title: 'Contract Signed and Payment Received', detail: 'Signed contract returned and payment received.' },
+  { key: 'prep_call', title: 'Prep Call Completed', detail: 'Pre-intervention prep call completed.' },
+  { key: 'date_set', title: 'Intervention Date Set', detail: 'Intervention date confirmed with the team.' },
+  { key: 'letters_received', title: 'Letters Received', detail: 'All participant letters received.' },
+  { key: 'travel_arranged', title: 'Travel Arrangements Made', detail: 'Flights, lodging, and transport booked.' },
+  { key: 'intervention_completed', title: 'Intervention Completed', detail: 'Intervention held.' },
 ];
 
 export type AppointmentKind = 'session' | 'call' | 'intervention' | 'other';
@@ -115,6 +117,16 @@ export interface Invite {
   case_id: string;
   target: InviteTarget;
   sent_at: string;
+}
+
+export interface CaseFile {
+  id: string;
+  case_id: string;
+  name: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  storage_path: string;
+  created_at: string;
 }
 
 export type DocumentKind = 'letter_guidelines' | 'boundaries' | 'services_agreement' | 'other';

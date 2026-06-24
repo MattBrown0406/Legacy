@@ -43,6 +43,8 @@ SQL editor:
 4. `20260623000004_appointments.sql`
 5. `20260623000005_invites_documents_invoices.sql`
 6. `20260623000006_gcal.sql`
+7. `20260623000007_participant_contacts_and_case_files.sql` (also creates the
+   private `case-files` Storage bucket used by Family Readiness uploads)
 
 Also confirm **Auth → Email** is enabled (it is by default). If you want to skip
 the email-confirmation step during the pilot, turn off "Confirm email" under

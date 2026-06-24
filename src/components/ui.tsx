@@ -23,8 +23,20 @@ export function H2({ children, style }: { children: React.ReactNode; style?: Sty
   return <Text style={[styles.h2, style]}>{children}</Text>;
 }
 
-export function Body({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
-  return <Text style={[styles.body, style]}>{children}</Text>;
+export function Body({
+  children,
+  style,
+  numberOfLines,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<TextStyle>;
+  numberOfLines?: number;
+}) {
+  return (
+    <Text style={[styles.body, style]} numberOfLines={numberOfLines}>
+      {children}
+    </Text>
+  );
 }
 
 export function Muted({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
