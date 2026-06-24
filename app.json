@@ -5,16 +5,18 @@
     "version": "1.0.0",
     "orientation": "default",
     "scheme": "legacy",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#142A47"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.freedominterventions.legacy",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

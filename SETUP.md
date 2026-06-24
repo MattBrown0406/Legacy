@@ -115,9 +115,10 @@ eas env:create --environment production --name EXPO_PUBLIC_SUPABASE_ANON_KEY --v
 eas env:create --environment production --name EXPO_PUBLIC_GOOGLE_CLIENT_ID --value <your-client-id>.apps.googleusercontent.com
 ```
 
-### 4b. Add an app icon (recommended)
-Drop a 1024×1024 PNG at `assets/icon.png` and add `"icon": "./assets/icon.png"`
-under `expo` in `app.json`. Without it, EAS uses a default icon.
+### 4b. App icon
+Done — a branded 1024×1024 icon (navy + gold lighthouse) is at `assets/icon.png`
+and wired in `app.json` (also used as the splash logo). Replace that file if you
+want a different mark.
 
 ### 4c. Build & submit
 ```bash
