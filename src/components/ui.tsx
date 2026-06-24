@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   TextInput,
@@ -14,19 +15,19 @@ import { palette, radius, serifFont, spacing } from '@/theme';
 
 /* ---------- Typography ---------- */
 
-export function H1({ children, style }: { children: React.ReactNode; style?: TextStyle }) {
+export function H1({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
   return <Text style={[styles.h1, style]}>{children}</Text>;
 }
 
-export function H2({ children, style }: { children: React.ReactNode; style?: TextStyle }) {
+export function H2({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
   return <Text style={[styles.h2, style]}>{children}</Text>;
 }
 
-export function Body({ children, style }: { children: React.ReactNode; style?: TextStyle }) {
+export function Body({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
   return <Text style={[styles.body, style]}>{children}</Text>;
 }
 
-export function Muted({ children, style }: { children: React.ReactNode; style?: TextStyle }) {
+export function Muted({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
   return <Text style={[styles.muted, style]}>{children}</Text>;
 }
 
@@ -42,7 +43,7 @@ export function Card({
   onPress,
 }: {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }) {
   if (onPress) {
@@ -75,7 +76,7 @@ export function Button({
   variant?: ButtonVariant;
   loading?: boolean;
   disabled?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }) {
   const isDisabled = disabled || loading;
   const v = buttonVariants[variant];
@@ -154,6 +155,37 @@ export function Divider() {
   return <View style={styles.divider} />;
 }
 
+/* ---------- SegmentedControl ---------- */
+
+export function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <View style={styles.segment}>
+      {options.map((opt) => {
+        const active = opt.value === value;
+        return (
+          <Pressable
+            key={opt.value}
+            onPress={() => onChange(opt.value)}
+            style={[styles.segmentItem, active && styles.segmentItemActive]}
+          >
+            <Text style={[styles.segmentText, active && styles.segmentTextActive]}>
+              {opt.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   h1: { fontFamily: serifFont, fontSize: 28, color: palette.navy, fontWeight: '700' },
   h2: { fontFamily: serifFont, fontSize: 20, color: palette.navy, fontWeight: '600' },
@@ -205,4 +237,26 @@ const styles = StyleSheet.create({
   },
   badgeText: { fontSize: 12, fontWeight: '700', letterSpacing: 0.3 },
   divider: { height: 1, backgroundColor: palette.lineSoft, marginVertical: spacing.lg },
+  segment: {
+    flexDirection: 'row',
+    backgroundColor: palette.ivoryDeep,
+    borderRadius: radius.md,
+    padding: 4,
+  },
+  segmentItem: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+  },
+  segmentItemActive: {
+    backgroundColor: palette.white,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
+  },
+  segmentText: { fontSize: 15, fontWeight: '600', color: palette.textMuted },
+  segmentTextActive: { color: palette.navy },
 });
